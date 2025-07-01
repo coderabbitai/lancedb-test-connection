@@ -1,0 +1,14 @@
+{
+  "name": "lancedb",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "description": "",
+  "dependencies": {
+    "@lancedb/lancedb": "^0.21.0",
+    "apache-arrow": "^18.1.0"
+  }
+}
