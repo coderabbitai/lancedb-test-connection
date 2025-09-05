@@ -1,42 +1,34 @@
-import * as lancedb from '@lancedb/lancedb';
-import { LanceSchema } from '@lancedb/lancedb/embedding';
-import { Utf8 } from 'apache-arrow';
+import * as lancedb from "@lancedb/lancedb";
+import { LanceSchema } from "@lancedb/lancedb/embedding";
+import { Utf8 } from "apache-arrow";
 
-const S3_PATH = "s3://<BUCKET_NAME>/test/coderabbit/data"
+const S3_PATH = "s3://<BUCKET_NAME>/coderabbit/data/kb";
 
 const main = async () => {
-  console.log(`\nConnecting to lancedb s3 object store using path: ${S3_PATH}`)
+  console.log(`\nConnecting to lancedb s3 object store using path: ${S3_PATH}`);
   const db = await lancedb.connect(S3_PATH);
 
-  const schema = LanceSchema({
-    text: new Utf8()
-  });
+  const tables = await db.tableNames();
 
-  const table = await db.createEmptyTable('test', schema, {
-    storageOptions: {
-      new_table_enable_v2_manifest_paths: "true"
-    },
-    mode: 'create',
-    existOk: true,
-  })
+  if (tables.length === 0) {
+    console.log("No tables found");
+    return;
+  }
 
-  await table.mergeInsert("text").whenNotMatchedInsertAll()
-    .execute([{
-      text: "Hello World"
-    }])
+  for (const table of tables) {
+    console.log(`Table: ${table}`);
 
-  const data = await table.query().toArray()
-  console.log("Table data: ", data)
-}
+    if (!table.startsWith("learning")) {
+      continue;
+    }
 
-const logAwsEnvVariables = () => {
-  console.log("AWS related environment variables:");
-  Object.keys(process.env)
-    .filter(key => key.startsWith('AWS_'))
-    .forEach(key => {
-      console.log(`${key}=${process.env[key]}`);
-    });
+    console.log(`-----Learnings table found: ${table} -----`);
+
+    const tbl = await db.openTable(table);
+    const data = await tbl.query().limit(10).toArray();
+
+    console.log("Data", data);
+  }
 };
 
-logAwsEnvVariables()
 main().catch(console.error);
