@@ -14,18 +14,12 @@ const main = async () => {
   }
 
   for (const table of tables) {
-    console.log(`Table: ${table}`);
-
-    if (!table.startsWith("learning")) {
-      continue;
-    }
-
-    console.log(`-----Learnings table found: ${table} -----`);
+    console.log(`\n-----Table data: ${table} -----`);
 
     const tbl = await db.openTable(table);
     const data = await tbl.query().limit(10).toArray();
 
-    console.log("Data", data);
+    console.log(data);
   }
 };
 
