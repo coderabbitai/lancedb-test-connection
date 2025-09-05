@@ -1,6 +1,4 @@
 import * as lancedb from "@lancedb/lancedb";
-import { LanceSchema } from "@lancedb/lancedb/embedding";
-import { Utf8 } from "apache-arrow";
 
 const S3_PATH = "s3://<BUCKET_NAME>/coderabbit/data/kb";
 
